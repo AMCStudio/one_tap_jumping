@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 
 public class GameController : MonoBehaviour {
@@ -116,6 +117,11 @@ public class GameController : MonoBehaviour {
     {
         Destroy(blocks[0].gameObject);
         blocks.Remove(blocks[0]);
+    }
+
+    public void restart_level()
+    {
+        SceneManager.LoadScene(0);
     }
 
 }

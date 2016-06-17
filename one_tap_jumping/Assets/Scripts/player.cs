@@ -17,13 +17,17 @@ public class player : MonoBehaviour {
     public GameObject score_text;
     private int score = 0;
 
+    public GameObject[] active_ui_objects;
+
+    private SpriteRenderer sprite_renderer;
+
 	// Use this for initialization
 	void Start () {
         player_direction = player_change_pos.right;
         InvokeRepeating("move_player", 2.0f, 0.55f);
         player_body = GetComponent<Rigidbody2D>();
-        score_text = GameObject.FindGameObjectWithTag("score");
         score_text.GetComponent<Text>().text = score.ToString();
+        sprite_renderer = GetComponent<SpriteRenderer>();
 	}
 	
 	// Update is called once per frame
@@ -64,6 +68,12 @@ public class player : MonoBehaviour {
             CancelInvoke();
             player_body.gravityScale = 1;
             dead = true;
+            sprite_renderer.sortingLayerName = "Default";
+            score_text.SetActive(false);
+            foreach (GameObject ui_objects in active_ui_objects)
+            {
+                ui_objects.SetActive(true);
+            }
         }
     }
 }
