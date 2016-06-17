@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.Advertisements;
 
 
 public class GameController : MonoBehaviour {
@@ -28,7 +29,7 @@ public class GameController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         blocks = new List<GameObject>();
-        InvokeRepeating("create_first_blocks", 0, 0.5f);
+        InvokeRepeating("create_first_blocks", 0, 0.3f);
         camera = GetComponent<Camera>();
         camera.clearFlags = CameraClearFlags.SolidColor;
         first_terrain = GameObject.FindGameObjectWithTag("first");
@@ -68,8 +69,8 @@ public class GameController : MonoBehaviour {
 
         if (blocks.Count == 3)
         {
-            InvokeRepeating("create_blocks", 0.50f, 0.55f);
-            InvokeRepeating("remove_blocks", 2.5f, 0.55f);
+            InvokeRepeating("create_blocks", 0.3f, 0.3f);
+            InvokeRepeating("remove_blocks", 1.2f, 0.3f);
             CancelInvoke("create_first_blocks");
         }
     }
@@ -121,7 +122,44 @@ public class GameController : MonoBehaviour {
 
     public void restart_level()
     {
-        SceneManager.LoadScene(0);
+        //SceneManager.LoadScene(0);
+        player.GetComponent<SpriteRenderer>().sortingLayerName = "player";
+        player.GetComponent<Transform>().transform.position = blocks[1].transform.position;
+        player.GetComponent<player>().dead = false;
+        player.GetComponent<player>().start_moving(blocks[1].tag);
+        InvokeRepeating("create_blocks", 1f, 0.3f);
+        InvokeRepeating("remove_blocks", 1.2f, 0.3f);
     }
 
+    public void ShowRewardedAd()
+    {
+        if (Advertisement.IsReady("rewardedVideoZone"))
+        {
+            var options = new ShowOptions { resultCallback = HandleShowResult };
+            Advertisement.Show("rewardedVideoZone", options);
+        }
+    }
+
+    private void HandleShowResult(ShowResult result)
+    {
+        switch (result)
+        {
+            case ShowResult.Finished:
+                Debug.Log("The ad was successfully shown.");
+                // YOUR CODE TO REWARD THE GAMER
+                /*player.GetComponent<SpriteRenderer>().sortingLayerName = "player";
+                player.GetComponent<Transform>().transform.position = blocks[1].transform.position;
+                player.GetComponent<player>().dead = false;
+                player.GetComponent<player>().start_moving(blocks[1].tag);
+                InvokeRepeating("create_blocks", 2f, 0.55f);
+                InvokeRepeating("remove_blocks", 2.5f, 0.55f);*/
+                break;
+            case ShowResult.Skipped:
+                Debug.Log("The ad was skipped before reaching the end.");
+                break;
+            case ShowResult.Failed:
+                Debug.LogError("The ad failed to be shown.");
+                break;
+        }
+    }
 }

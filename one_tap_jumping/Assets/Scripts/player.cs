@@ -21,13 +21,18 @@ public class player : MonoBehaviour {
 
     private SpriteRenderer sprite_renderer;
 
+    private GameController game_controller_script;
+
+    private Vector3 new_pos;
+
 	// Use this for initialization
 	void Start () {
-        player_direction = player_change_pos.right;
-        InvokeRepeating("move_player", 2.0f, 0.55f);
+        InvokeRepeating("move_player", 1.0f, 0.01f);
         player_body = GetComponent<Rigidbody2D>();
         score_text.GetComponent<Text>().text = score.ToString();
         sprite_renderer = GetComponent<SpriteRenderer>();
+        game_controller_script = GetComponent<GameController>();
+        new_pos = new Vector3(transform.position.x + 50, transform.position.y + 25, 0);
 	}
 	
 	// Update is called once per frame
@@ -44,36 +49,73 @@ public class player : MonoBehaviour {
                 player_direction = player_change_pos.right;
             }
         }
+
+        if (!dead)
+        {
+            //transform.position = new Vector3(transform.position.x + 0.50f, transform.position.y + 0.25f, transform.position.z)
+            transform.position = Vector3.Lerp(transform.position, new_pos, Time.deltaTime / 50);
+        }
+       
+        Vector2 screenPosition = Camera.main.WorldToScreenPoint(transform.position);
+        if (screenPosition.y < -50){
+            player_body.velocity = new Vector2(0, 0);
+        }
 	}
 
-    void move_player()
+    public void start_moving(string direction)
     {
-        if (player_direction == player_change_pos.right)
+        InvokeRepeating("move_player", 1f, 0.3f);
+        if (direction == "right")
         {
-            transform.position = new Vector3(transform.position.x + 0.50f, transform.position.y + 0.25f, transform.position.z);
+            player_direction = player_change_pos.right;
         }
         else
         {
-            transform.position = new Vector3(transform.position.x - 0.50f, transform.position.y + 0.25f, transform.position.z);
+            player_direction = player_change_pos.left;
         }
+    }
+
+    void move_player()
+    {
+        
         score += 1;
         score_text.GetComponent<Text>().text = score.ToString();
     }
 
-    void OnTriggerExit2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "first")
+        {
+            player_direction = player_change_pos.right;
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (player_direction == player_change_pos.right)
+        {
+            new_pos = new Vector3(transform.position.x + 50, transform.position.y + 25, 0);
+        }
+        else
+        {
+            new_pos = new Vector3(transform.position.x - 50, transform.position.y + 25, 0);
+        }
+        print("ewfew");
+    }
+
+    /*void OnTriggerExit2D(Collider2D other)
     {
         if (other.gameObject.tag == "left" && player_direction == player_change_pos.right ||
             other.gameObject.tag == "right" && player_direction == player_change_pos.left)
         {
             CancelInvoke();
-            player_body.gravityScale = 1;
-            dead = true;
+            player_body.velocity = new Vector2(0, -7);
             sprite_renderer.sortingLayerName = "Default";
-            score_text.SetActive(false);
+            dead = true;
             foreach (GameObject ui_objects in active_ui_objects)
             {
                 ui_objects.SetActive(true);
             }
         }
-    }
+    }*/
 }
