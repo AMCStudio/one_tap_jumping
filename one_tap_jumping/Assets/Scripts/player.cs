@@ -44,12 +44,14 @@ public class player : MonoBehaviour {
         {
             if (player_direction == player_change_pos.right)
             {
-                new_pos = new Vector3(transform.position.x + 50, transform.position.y + 25, 0);
+                player_direction = player_change_pos.left;
+                new_pos = new Vector3(transform.position.x - 50, transform.position.y + 25, 0);
             }
             else
             {
-                new_pos = new Vector3(transform.position.x - 50, transform.position.y + 25, 0);
-            }
+                player_direction = player_change_pos.right;
+                new_pos = new Vector3(transform.position.x + 50, transform.position.y + 25, 0);
+            } 
         }
 
         if (can_move)
@@ -94,15 +96,6 @@ public class player : MonoBehaviour {
         }
 
         can_change_dir = true;
-
-        if (other.gameObject.tag == "left")
-        {
-            player_direction = player_change_pos.left;
-        }
-        else
-        {
-            player_direction = player_change_pos.right;
-        }
     }
 
     void OnTriggerExit2D(Collider2D other)
