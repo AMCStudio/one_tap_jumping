@@ -27,7 +27,6 @@ public class player : MonoBehaviour {
 
     private Vector3 new_pos;
 
-
 	// Use this for initialization
 	void Start () {
         player_body = GetComponent<Rigidbody2D>();
